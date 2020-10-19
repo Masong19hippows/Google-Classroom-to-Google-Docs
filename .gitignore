@@ -1,1 +1,1 @@
-# ignore all json files (for creds) *.json
+# ignore all json files and token files (for creds) *.json *.pickle
