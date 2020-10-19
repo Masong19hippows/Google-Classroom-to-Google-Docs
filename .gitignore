@@ -1,2 +1,2 @@
-*.pickle
-*.json
+creds/*.pickle
+creds/*.json
