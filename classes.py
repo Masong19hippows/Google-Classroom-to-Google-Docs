@@ -9,7 +9,6 @@ from google.auth.transport.requests import Request
 import datetime
 from datetime import date
 import sys
-import json
 
 today = date.today().strftime('%m') + "/" + date.today().strftime('%d')
 todayfinal = datetime.datetime.strptime(today, "%m/%d")
@@ -48,8 +47,10 @@ def main():
     docwords = 'College English:' + '\n'
     for items in resultsEng:
         title = items.get("title")
+        if items.get('dueDate') is None:
+            continue
         monthdue = items.get("dueDate").get("month")
-        daydue = items.get("dueDate").get("day")
+        daydue = items.get("dueDate").get('day')
         totaldue = str(monthdue) + "/" + str(daydue)
         finaldue = datetime.datetime.strptime(totaldue, "%m/%d")
         if todayfinal > finaldue:
@@ -60,8 +61,10 @@ def main():
     docwords = docwords + "College Government:" + '\n'
     for items in resultsGovern:
         title = items.get("title")
-        monthdue = items.get("dueDate").get("month")
-        daydue = items.get("dueDate").get("day")
+        if items.get('dueDate') is None:
+	    continue
+	monthdue = items.get("dueDate").get('month')
+        daydue = items.get("dueDate").get('day')
         totaldue = str(monthdue) + "/" + str(daydue)
         finaldue = datetime.datetime.strptime(totaldue, "%m/%d")
         if todayfinal > finaldue:
@@ -73,8 +76,10 @@ def main():
     docwords = docwords + "ACT Prep:" + '\n'
     for items in resultsACT:
         title = items.get("title")
-        monthdue = items.get("dueDate").get("month")
-        daydue = items.get("dueDate").get("day")
+        if items.get('dueDate') is None:
+	    continue
+	monthdue = items.get("dueDate").get('month')
+        daydue = items.get("dueDate").get('day')
         totaldue = str(monthdue) + "/" + str(daydue)
         finaldue = datetime.datetime.strptime(totaldue, "%m/%d")
         if todayfinal > finaldue:
@@ -98,10 +103,10 @@ def main():
 
         },
     ]
-   
+
     result = service2.documents().batchUpdate(
         documentId=DOCUMENT_ID, body={'requests': requests}).execute()
-    
+
     requests = [
          {
             'insertText': {
