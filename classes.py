@@ -117,8 +117,7 @@ def main():
         },
     ]
 
-    result = service2.documents().batchUpdate(
-        documentId=DOCUMENT_ID, body={'requests': requests}).execute()
+    result = service2.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
 
 if __name__ == '__main__':
     main()
