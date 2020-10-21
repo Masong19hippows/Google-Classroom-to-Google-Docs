@@ -7,10 +7,9 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import datetime
-from datetime import date
 import sys
 
-today = date.today().strftime('%m') + "/" + date.today().strftime('%d')
+today = datetime.date.today().strftime('%m') + "/" + datetime.date.today().strftime('%d')
 todayfinal = datetime.datetime.strptime(today, "%m/%d")
 
 SCOPES = ['https://www.googleapis.com/auth/documents', 'https://www.googleapis.com/auth/classroom.student-submissions.me.readonly']
