@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 from __future__ import print_function
 import pickle
@@ -61,14 +61,14 @@ def main():
     for items in resultsGovern:
         title = items.get("title")
         if items.get('dueDate') is None:
-	    continue
-	monthdue = items.get("dueDate").get('month')
+            continue
+        monthdue = items.get("dueDate").get('month')
         daydue = items.get("dueDate").get('day')
         totaldue = str(monthdue) + "/" + str(daydue)
         finaldue = datetime.datetime.strptime(totaldue, "%m/%d")
         if todayfinal > finaldue:
             continue
-	else:
+        else:
             docwords = docwords + '   ' + str(title) + ' ' + str(totaldue) + '\n'
 
 
@@ -76,8 +76,8 @@ def main():
     for items in resultsACT:
         title = items.get("title")
         if items.get('dueDate') is None:
-	    continue
-	monthdue = items.get("dueDate").get('month')
+            continue
+        monthdue = items.get("dueDate").get('month')
         daydue = items.get("dueDate").get('day')
         totaldue = str(monthdue) + "/" + str(daydue)
         finaldue = datetime.datetime.strptime(totaldue, "%m/%d")
