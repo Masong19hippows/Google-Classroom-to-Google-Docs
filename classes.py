@@ -1,42 +1,41 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-import pickle
-import os.path
+from Docs import update
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import datetime
 import sys
+import pickle
+import os
+mydir = os.path.dirname(__file__)
 
 today = datetime.date.today().strftime('%m') + "/" + datetime.date.today().strftime('%d')
 todayfinal = datetime.datetime.strptime(today, "%m/%d")
 
-SCOPES = ['https://www.googleapis.com/auth/documents', 'https://www.googleapis.com/auth/classroom.student-submissions.me.readonly']
+SCOPES = ['https://www.googleapis.com/auth/classroom.student-submissions.me.readonly', 'https://www.googleapis.com/auth/documents']
 DOCUMENT_ID = '1d_L2Rb9F21jgobyEOk3L8W99pQK05SzN7fbEshurKfE'
 
-def main():
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('/home/pi/classroom/creds/token.pickle'):
-        with open('/home/pi/classroom/creds/token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                '/home/pi/classroom/creds/credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('/home/pi/classroom/creds/token.pickle', 'wb') as token:
+if os.path.exists(mydir + '/creds/token.pickle'):
+    with open(mydir + '/creds/token.pickle', 'rb') as token:
+        creds = pickle.load(token)
+         
+if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    else:
+        flow = InstalledAppFlow.from_client_secrets_file(mydir + '/creds/credentials.json', SCOPES)
+        creds = flow.run_local_server(port=0)
+        with open(mydir + '/creds/token.pickle', 'wb') as token:
             pickle.dump(creds, token)
+      
+service = build('docs', 'v1', credentials=creds)
+
+
+
+def main():
 
     service = build('classroom', 'v1', credentials=creds)
-    service2 = build('docs', 'v1', credentials=creds)
 
     # Call the Classroom API
     resultsEng = service.courses().courseWork().list(courseId=123423892759, orderBy='dueDate asc').execute().get('courseWork')
@@ -85,39 +84,12 @@ def main():
             continue
         else:
             docwords = docwords + ' ' + str(title) + ' ' + str(totaldue) + '\n'
+   
+   
+    update(DOCUMENT_ID).delEvry()
+    update(DOCUMENT_ID).insertText(docwords, '1')
 
 
-    requestpart = service2.documents().get(documentId=DOCUMENT_ID).execute().get('body').get('content')
-    for item in requestpart:
-        requestfinalIndex = item.get('endIndex')
-    requests = [
-        {
-            'deleteContentRange': {
-                'range': {
-                    'startIndex': 1,
-                    'endIndex': requestfinalIndex - 1,
-                }
-
-            }
-
-        },
-    ]
-
-    result = service2.documents().batchUpdate(
-        documentId=DOCUMENT_ID, body={'requests': requests}).execute()
-
-    requests = [
-         {
-            'insertText': {
-                'location': {
-                    'index': 1,
-                },
-                'text': docwords
-            }
-        },
-    ]
-
-    result = service2.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
 
 if __name__ == '__main__':
     main()
